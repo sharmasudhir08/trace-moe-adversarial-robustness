@@ -1,0 +1,8 @@
+model,n_seeds,mean_rho,ci_lo,ci_hi,verdict
+trace_moe,5,1.0000,1.0000,1.0000,SUPPORTED
+transformer,5,1.0000,1.0000,1.0000,SUPPORTED
+bilstm_dnn,5,1.0000,1.0000,1.0000,SUPPORTED
+tfsage_lite,5,1.0000,1.0000,1.0000,SUPPORTED
+
+# overall
+overall_verdict,"SUPPORTED (strong, overall)"

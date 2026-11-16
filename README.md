@@ -1,6 +1,6 @@
 # Adversarial Robustness of Mixture-of-Experts IoMT Intrusion Detection with Protocol-Cluster Reference-Profile Analysis
 
-Code for the paper submitted to *Cluster Computing* (Springer Nature, 2026).
+Code, figures and summary result files for the paper submitted to *Cluster Computing* (Springer Nature, 2026). The compiled manuscript is included as `Paper 2.pdf`.
 
 ## Overview
 
@@ -24,6 +24,21 @@ dataset.
 ## Repository structure
 
 ```
+├── Paper 2.pdf
+├── figures
+│   ├── Fig1_dataflow.pdf / .tif
+│   ├── Fig2_workflow.pdf / .tif
+│   ├── Fig3_robustness.pdf / .tif
+│   ├── Fig4_pcrp.pdf
+│   ├── Fig5_cost_robustness.pdf / .tif
+│   └── gen_fig1_dataflow.py, gen_fig2_workflow.py, gen_fig3_robustness.py, gen_fig5_cost_robustness.py
+├── results
+│   ├── twin_h6/                      (H6 per-seed and verdict CSV/JSON/MD)
+│   ├── robustness_variant/summary_adv.csv
+│   ├── ablation_history/             (22 per-epoch history CSVs, seeds 43 and 44)
+│   ├── abstain_post_fix_summary.csv
+│   ├── abstain_rescore_log_20261113_092548.csv
+│   └── bootstrap_cis.json / .md
 ├── scripts
 │   ├── 04_train_deep.py
 │   ├── 05_ablation.py
@@ -67,6 +82,7 @@ dataset.
 ├── CITATION.cff
 ├── LICENSE
 ├── NOTICE
+├── SHASUMS
 ├── TRACEABILITY.md
 ├── data_access.md
 └── requirements.txt
@@ -80,11 +96,12 @@ dataset.
 | Window length T | 16 consecutive flows |
 | Training windows per class | 60,000 (balanced sampling) |
 | PGD steps | 20 |
-| PGD step size α | 0.1ε |
+| PGD step size α (evaluation) | 0.1ε |
 | PGD norm | ℓ∞ |
 | Mutable features | 18 |
 | Adversarial fine-tuning epochs | 3 |
-| Adversarial fine-tuning budget εtrain | 0.25 |
+| Adversarial fine-tuning budget | ε drawn uniformly from [0, 0.25] per batch |
+| Adversarial fine-tuning PGD | 5 steps, α = 0.2ε |
 | TRACE-MoE d (encoder dim) | 128 |
 | TRACE-MoE expert_hidden | 256 |
 | TRACE-MoE experts E | 4 |
@@ -131,19 +148,24 @@ dataset.
 sha256sum -c SHASUMS
 ```
 
+`SHASUMS` lists every file except itself.
+
 ## What is included
 
 - Full source of the `trace_iomt` package: model definitions (TRACE-MoE, BiLSTM-DNN,
   Transformer, TF-SAGE-lite), training loop, PGD attack, metrics, and utilities
 - Training scripts: `04_train_deep.py`, `05_ablation.py`, `06_robustness.py`
 - H5 aggregation script: `analyze_h5.py`
+- Paper figures (PDF/TIFF) and their generator scripts in `figures/` (Fig. 4 is the compiled PDF only; no generator is bundled)
+- Summary result CSVs in `results/`: H6 verdict and per-seed table, adversarial fine-tuning summary, abstention summary and rescore log, bootstrap CIs, and ablation training histories
+- `TRACEABILITY.md`, which maps each paper number, table and figure to its source file
 
 ## What is NOT included
 
 - Raw PCAP captures and processed flow feature files (dataset files)
-- Model checkpoints, training history, and per-run result files
+- Model checkpoints and per-run `metrics.json` result files (`results/robustness/`, `results/ablation/`); several `TRACEABILITY.md` rows cite these and cannot be checked from this release alone
 - Configuration files (contain local paths)
-- Figure-generation code and manuscript LaTeX source
+- Manuscript LaTeX source
 - Preprocessing scripts (contain local paths to raw data)
 
 ## Citation

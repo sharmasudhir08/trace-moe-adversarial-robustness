@@ -1,0 +1,186 @@
+{
+  "generated_at_utc": "2026-11-14T07:29:35.175485+00:00",
+  "charter_version": "v1.6",
+  "charter_sha256": "6dc0bd10f8f4d9c5467ee96e4932f3569570e4c0d9b08635c6ca807e132a36d5",
+  "pairs_loaded": 20,
+  "pairs_total": 20,
+  "per_arch": [
+    {
+      "model": "trace_moe",
+      "n_seeds": 5,
+      "mean_rho": 0.9999999999999998,
+      "ci_lo": 0.9999999999999998,
+      "ci_hi": 0.9999999999999998,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "transformer",
+      "n_seeds": 5,
+      "mean_rho": 0.9999999999999998,
+      "ci_lo": 0.9999999999999998,
+      "ci_hi": 0.9999999999999998,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "bilstm_dnn",
+      "n_seeds": 5,
+      "mean_rho": 0.9999999999999998,
+      "ci_lo": 0.9999999999999998,
+      "ci_hi": 0.9999999999999998,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "tfsage_lite",
+      "n_seeds": 5,
+      "mean_rho": 0.9999999999999998,
+      "ci_lo": 0.9999999999999998,
+      "ci_hi": 0.9999999999999998,
+      "verdict": "SUPPORTED"
+    }
+  ],
+  "per_seed": [
+    {
+      "model": "trace_moe",
+      "seed": 42,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "trace_moe",
+      "seed": 43,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "trace_moe",
+      "seed": 44,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "trace_moe",
+      "seed": 45,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "trace_moe",
+      "seed": 46,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "transformer",
+      "seed": 42,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "transformer",
+      "seed": 43,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "transformer",
+      "seed": 44,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "transformer",
+      "seed": 45,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "transformer",
+      "seed": 46,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "bilstm_dnn",
+      "seed": 42,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "bilstm_dnn",
+      "seed": 43,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "bilstm_dnn",
+      "seed": 44,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "bilstm_dnn",
+      "seed": 45,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "bilstm_dnn",
+      "seed": 46,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "tfsage_lite",
+      "seed": 42,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "tfsage_lite",
+      "seed": 43,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "tfsage_lite",
+      "seed": 44,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "tfsage_lite",
+      "seed": 45,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    },
+    {
+      "model": "tfsage_lite",
+      "seed": 46,
+      "rho_spearman": 0.9999999999999999,
+      "status": "ok"
+    }
+  ],
+  "overall_verdict": "SUPPORTED (strong, overall)",
+  "epsilons": [
+    0.0,
+    0.05,
+    0.1,
+    0.25,
+    0.5
+  ],
+  "models": [
+    "trace_moe",
+    "transformer",
+    "bilstm_dnn",
+    "tfsage_lite"
+  ],
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "bootstrap_resamples": 10000,
+  "bootstrap_rng_seed": 42
+}
