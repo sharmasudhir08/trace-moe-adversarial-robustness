@@ -1,0 +1,8 @@
+# Python 3.12.4
+# Exact versions used in the experiments (CUDA 12.1 build of PyTorch)
+torch==2.5.1
+numpy==2.5.3
+scikit-learn==1.9.1
+pandas==3.0.6
+scipy==1.18.1
+matplotlib==3.11.2

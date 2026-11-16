@@ -1,0 +1,13 @@
+TRACE-MoE Adversarial Robustness -- Third-party notices
+========================================================
+
+Dataset
+-------
+CICIoMT2024 is provided by the Canadian Institute for Cybersecurity (CIC).
+See data_access.md for access instructions and citation.
+
+Dependencies
+------------
+This software uses PyTorch, scikit-learn, NumPy, pandas, SciPy, and
+Matplotlib. Each package carries its own licence.
+See requirements.txt for the exact versions used.

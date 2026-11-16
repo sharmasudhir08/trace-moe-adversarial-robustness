@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the paper."
+title: "Adversarial Robustness of Mixture-of-Experts IoMT Intrusion Detection with Protocol-Cluster Reference-Profile Analysis"
+type: software
+authors:
+  - given-names: Sudhir Kumar
+    family-names: Sharma
+    affiliation: Sharda University
+  - given-names: Sneha
+    family-names: Vasishth
+    affiliation: LeewayHertz
+repository-code: "https://github.com/sharmasudhir08/trace-moe-adversarial-robustness"
+license: MIT
+year: 2026
