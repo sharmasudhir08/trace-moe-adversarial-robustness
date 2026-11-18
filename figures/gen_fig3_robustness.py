@@ -187,10 +187,10 @@ for mname, dname, prefix in MODELS:
 # ---------------------------------------------------------------------------
 # Plot
 # ---------------------------------------------------------------------------
-FIG_WIDTH_INCH  = 174 / 25.4
-FIG_HEIGHT_INCH =  90 / 25.4
+FIG_WIDTH_INCH  = 4.94   # printed width (0.9 x text width), no scaling in LaTeX
+FIG_HEIGHT_INCH = 3.3
 DPI = 600
-FONT_SIZE = 7
+FONT_SIZE = 9
 
 fig, axes = plt.subplots(1, 2, figsize=(FIG_WIDTH_INCH, FIG_HEIGHT_INCH), dpi=DPI,
                          sharey=True)
@@ -217,7 +217,7 @@ for ax, title, (mk, sk) in zip(axes, PANEL_TITLES, CURVE_KEYS):
     ax.set_xlabel("PGD perturbation budget $\\varepsilon$",
                   fontsize=FONT_SIZE, fontfamily="DejaVu Sans")
     ax.set_xticks(EPS)
-    ax.set_xticklabels([str(e) for e in EPS], fontsize=FONT_SIZE - 1)
+    ax.set_xticklabels([str(e) for e in EPS], fontsize=FONT_SIZE - 1, rotation=45, ha="right", rotation_mode="anchor")
     ax.yaxis.set_tick_params(labelsize=FONT_SIZE - 1)
     ax.set_ylim(0.25, 0.85)
     ax.set_xlim(-0.01, 0.52)
@@ -233,16 +233,16 @@ axes[0].set_ylabel("19-class macro-F1", fontsize=FONT_SIZE,
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels,
            loc="lower center",
-           bbox_to_anchor=(0.5, -0.04),
-           ncol=4,
-           fontsize=FONT_SIZE,
+           bbox_to_anchor=(0.5, -0.06),
+           ncol=2,
+           fontsize=FONT_SIZE - 1,
            framealpha=0.9,
            edgecolor="#aaaaaa",
            handlelength=2.0)
 
 # suptitle removed: title information is in the LaTeX caption
 
-plt.tight_layout(pad=0.3, rect=[0, 0.08, 1, 1])
+plt.tight_layout(pad=0.3, rect=[0, 0.14, 1, 1])
 
 fig.savefig(str(OUT_PDF), dpi=DPI, bbox_inches="tight", format="pdf")
 fig.savefig(str(OUT_TIF), dpi=DPI, bbox_inches="tight", format="tiff",

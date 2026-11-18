@@ -1,223 +1,110 @@
 """
 gen_fig2_workflow.py
 ====================
-Generate Fig 2 for Paper 2: clean adversarial robustness evaluation workflow.
+Fig 2 for Paper 2: adversarial robustness evaluation workflow (re-laid out for the printed width).
 
-Output files
-------------
-  documents_v2/paper2/figures/Fig2_workflow.pdf  (vector, for LaTeX)
-  documents_v2/paper2/figures/Fig2_workflow.tif  (600 DPI, for Springer submission)
-
-Design constraints (Springer Nature two-column)
-------------------------------------------------
-  Width : 174 mm  (double-column)
-  Height: <= 234 mm
-  DPI   : 600
-  Fonts : Helvetica/Arial, 8-12 pt inside boxes
-  Style : white background, grey component boxes, blue flow arrows, black text
-  Rule  : NO result numbers, NO "Supported"/"Not supported"/"Mixed"/"Inconclusive",
-          NO verdict outcomes anywhere in the figure.
-
-Workflow stages (from configs/, scripts/06_robustness.py)
----------------------------------------------------------
-  1. CICIoMT2024 Wi-Fi+MQTT (45 features, 19 classes, seeds 42-46)
-  2. Train/Val/Test split (file-level, 80/15/20 of captures)
-  3. Train four models: TRACE-MoE, Transformer, BiLSTM-DNN, TF-SAGE-lite
-  4. PCRP fitting: Gaussian profiles per protocol-category on clean training windows
-  5. Adversarial fine-tuning: 5-step PGD, epsilon~Uniform[0,0.25], 3 epochs
-  6. Robustness evaluation: clean model + adv-FT model, PGD at epsilon in {0,0.05,0.10,0.25,0.50}
-     18 mutable features; H6 uses 5-step PGD on 1% subsample
-  7. Hypothesis tests H1-H6 (labels only, no verdicts)
+Outputs: figures/Fig2_workflow.pdf (vector) and figures/Fig2_workflow.tif (600 dpi).
+Drawn at the printed width (5.49 in = text width, included without scaling); all text is at least 8 pt at that size.
+Previous version: gen_fig2_workflow.py.backup_20261118 (7 pt and 6 pt text at 7.0 in width).
+No result numbers or verdicts appear in the figure (the 4,905 evaluation windows are a design quantity).
 """
-
 import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
-import numpy as np
 
-# ---- Output paths -------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIG_DIR = os.path.join(SCRIPT_DIR, "figures")
 os.makedirs(FIG_DIR, exist_ok=True)
 OUT_PDF = os.path.join(FIG_DIR, "Fig2_workflow.pdf")
 OUT_TIF = os.path.join(FIG_DIR, "Fig2_workflow.tif")
 
-# ---- Page geometry ------------------------------------------------------
-FIG_WIDTH_INCH = 174 / 25.4
-FIG_HEIGHT_INCH = 110 / 25.4
-DPI = 600
+W, H, DPI = 5.49, 6.35, 600
+COL_DATA, COL_TRAIN, COL_EVAL, COL_HYP, COL_PCRP = "#D0E4F7", "#E8E8E8", "#E8F5E9", "#FFF3E0", "#F3E5F5"
+COL_ARROW, COL_EDGE = "#2255AA", "#555555"
+FS, FS_SUB = 8.5, 8.2
+plt.rcParams["font.family"] = "DejaVu Sans"
 
-# ---- Colours ------------------------------------------------------------
-COL_DATA   = "#D0E4F7"   # blue: data
-COL_TRAIN  = "#E8E8E8"   # grey: training
-COL_EVAL   = "#E8F5E9"   # green: evaluation
-COL_HYP    = "#FFF3E0"   # orange: hypothesis tests
-COL_PCRP   = "#F3E5F5"   # purple: PCRP
-COL_ARROW  = "#2255AA"   # blue arrow
-COL_EDGE   = "#555555"
-FONT_SIZE  = 7
-
-fig, ax = plt.subplots(figsize=(FIG_WIDTH_INCH, FIG_HEIGHT_INCH), dpi=DPI)
-ax.set_xlim(0, 1)
-ax.set_ylim(0, 1)
+fig, ax = plt.subplots(figsize=(W, 5.75), dpi=DPI)
+ax.set_position([0, 0, 1, 1])
+ax.set_xlim(0, W)
+ax.set_ylim(H, 0)
 ax.axis("off")
 fig.patch.set_facecolor("white")
 
 
-def box(ax, x, y, w, h, label, sublabel=None, color=COL_TRAIN,
-        fontsize=FONT_SIZE):
-    rect = FancyBboxPatch(
-        (x - w / 2, y - h / 2), w, h,
-        boxstyle="round,pad=0.01",
-        linewidth=0.6,
-        edgecolor=COL_EDGE,
-        facecolor=color,
-        zorder=2,
-    )
-    ax.add_patch(rect)
-    if sublabel:
-        ax.text(x, y + h * 0.14, label, ha="center", va="center",
-                fontsize=fontsize, fontweight="bold",
-                fontfamily="DejaVu Sans", zorder=3)
-        ax.text(x, y - h * 0.18, sublabel, ha="center", va="center",
-                fontsize=fontsize - 1, style="italic",
-                fontfamily="DejaVu Sans", zorder=3)
+def box(x, y, w, h, title, sub=None, color=COL_TRAIN):
+    ax.add_patch(FancyBboxPatch((x - w / 2, y - h / 2), w, h, boxstyle="round,pad=0.0,rounding_size=0.05",
+                                linewidth=0.6, edgecolor=COL_EDGE, facecolor=color, zorder=2))
+    if sub:
+        extra = 0.08 * max(0, sub.count(chr(10)) - 1)
+        ax.text(x, y - 0.14 - extra, title, ha="center", va="center", fontsize=FS, fontweight="bold", zorder=3)
+        ax.text(x, y + 0.12 + extra * 0.5, sub, ha="center", va="center", fontsize=FS_SUB, style="italic", linespacing=1.15, zorder=3)
     else:
-        ax.text(x, y, label, ha="center", va="center",
-                fontsize=fontsize, fontweight="bold",
-                fontfamily="DejaVu Sans", zorder=3)
+        ax.text(x, y, title, ha="center", va="center", fontsize=FS, fontweight="bold", zorder=3)
 
 
-def arrow(ax, x1, y1, x2, y2, label=None):
-    ax.annotate(
-        "", xy=(x2, y2), xytext=(x1, y1),
-        arrowprops=dict(
-            arrowstyle="-|>",
-            color=COL_ARROW,
-            lw=0.9,
-            mutation_scale=6,
-        ),
-        zorder=4,
-    )
-    if label:
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        ax.text(mx + 0.01, my, label, ha="left", va="center",
-                fontsize=FONT_SIZE - 1, color="#444444",
-                fontfamily="DejaVu Sans", zorder=5)
+def arrow(x1, y1, x2, y2):
+    ax.annotate("", xy=(x2, y2), xytext=(x1, y1),
+                arrowprops=dict(arrowstyle="-|>", color=COL_ARROW, lw=0.9, mutation_scale=7, shrinkA=0, shrinkB=0), zorder=4)
 
 
-# ---- Workflow: top-to-bottom with parallel branches ---------------------
+def note(x, y, text, ha="left"):
+    ax.text(x, y, text, ha=ha, va="center", fontsize=FS_SUB, color="#444444", linespacing=1.1)
 
-# Stage 1: Dataset
-box(ax, 0.5, 0.90, 0.46, 0.12,
-    "CICIoMT2024 (Wi-Fi + MQTT)",
-    "45 features · 19 classes · seeds 42 to 46 · 40 IoMT devices",
-    color=COL_DATA)
 
-# Arrow down
-arrow(ax, 0.5, 0.84, 0.5, 0.78)
-ax.text(0.52, 0.81, "file-level split", ha="left", va="center",
-        fontsize=FONT_SIZE - 1, color="#444444", fontfamily="DejaVu Sans")
+# in-figure title removed (the caption carries it)
 
-# Stage 2: Split
-box(ax, 0.5, 0.74, 0.70, 0.09,
-    "Train / Validation / Test split",
-    "80% capture files (85% rows train, 15% rows val), 20% capture files test; dedup",
-    color=COL_DATA)
+# data and split
+box(W / 2, 0.68, 5.0, 0.62, "CICIoMT2024 (Wi-Fi + MQTT)", "45 features, 19 classes, seeds 42 to 46, 40 IoMT devices", COL_DATA)
+arrow(W / 2, 0.99, W / 2, 1.2)
+note(W / 2 + 0.08, 1.095, "file-level split")
+box(W / 2, 1.55, 5.0, 0.7, "Train / validation / test split",
+    "80% of capture files (85% of rows train, 15% validation),\n20% of capture files test; deduplicated", COL_DATA)
 
-# Two arrows: left branch (Train models + PCRP), right stays single
-arrow(ax, 0.33, 0.70, 0.22, 0.60)
-arrow(ax, 0.5, 0.70, 0.5, 0.60)   # straight down for PCRP
-arrow(ax, 0.67, 0.70, 0.78, 0.60)
+# three branches
+XT, XP, XE = 1.0, 3.0, 4.65
+y3 = 2.62
+for xx, lab, ha in [(XT, "train windows", "left"), (XP, "train windows", "left"), (XE, "test windows", "right")]:
+    arrow(xx, 1.9, xx, y3 - 0.33)
+note(XT + 0.06, 2.1, "train windows")
+note(XP + 0.06, 2.1, "train windows")
+note(XE + 0.06, 2.1, "test\nwindows")
+box(XT, y3, 1.92, 0.66, "Train four architectures", "TRACE-MoE, Transformer,\nBiLSTM-DNN, TF-SAGE-lite", COL_TRAIN)
+box(XP, y3, 1.55, 0.66, "PCRP fitting", "Gaussian profiles,\n6 traffic categories", COL_PCRP)
+box(XE, y3, 1.5, 0.66, "Test set (held out)", "4,905 windows,\nclass-balanced", COL_DATA)
 
-ax.text(0.20, 0.66, "train\nwindows", ha="center", va="center",
-        fontsize=FONT_SIZE - 1, color="#444444", fontfamily="DejaVu Sans")
-ax.text(0.56, 0.65, "train\nwindows", ha="center", va="center",
-        fontsize=FONT_SIZE - 1, color="#444444", fontfamily="DejaVu Sans")
-ax.text(0.84, 0.65, "test\nwindows", ha="center", va="center",
-        fontsize=FONT_SIZE - 1, color="#444444", fontfamily="DejaVu Sans")
+# adversarial fine-tuning
+y4 = 3.8
+box(1.95, y4, 2.4, 0.92, "Adversarial fine-tuning", "3 epochs, 5-step PGD,\n$\\varepsilon{\\sim}\\mathrm{Uniform}[0,0.25]$,\n18 mutable features", COL_TRAIN)
+arrow(1.5, y3 + 0.33, 1.5, y4 - 0.46)
 
-# Stage 3L: Train four architectures
-box(ax, 0.22, 0.54, 0.34, 0.10,
-    "Train four architectures",
-    "TRACE-MoE · Transformer · BiLSTM-DNN · TF-SAGE-lite",
-    color=COL_TRAIN)
+# evaluation
+y5 = 4.95
+box(W / 2, y5, 5.0, 0.78, "Robustness evaluation",
+    "$\\varepsilon \\in \\{0, 0.05, 0.10, 0.25, 0.50\\}$, macro-F1 curves, PCRP discrepancy;\nH6: 5-step PGD on a 1% subsample", COL_EVAL)
+arrow(0.6, y3 + 0.33, 0.6, y5 - 0.39)
+note(0.66, 4.45, "clean model")
+arrow(1.95, y4 + 0.46, 1.95, y5 - 0.39)
+note(2.01, 4.42, "fine-tuned model")
+arrow(XP + 0.3, y3 + 0.33, XP + 0.3, y5 - 0.39)
+arrow(XE, y3 + 0.33, XE, y5 - 0.39)
 
-# Stage 3M: PCRP fitting
-box(ax, 0.5, 0.54, 0.16, 0.12,
-    "PCRP fitting",
-    "Gaussian profiles\n6 protocol-categories",
-    color=COL_PCRP)
+# hypotheses
+y6 = 5.88
+box(1.9, y6, 3.2, 0.5, "Hypothesis tests  H1 to H6", None, COL_HYP)
+arrow(1.9, y5 + 0.39, 1.9, y6 - 0.25)
 
-# Stage 3R: Test set (held out)
-box(ax, 0.78, 0.54, 0.22, 0.12,
-    "Test set (held out)",
-    "4,905 windows\n(class-balanced)",
-    color=COL_DATA)
+legend_items = [mpatches.Patch(facecolor=c, edgecolor=COL_EDGE, label=l) for c, l in
+                [(COL_DATA, "Data"), (COL_TRAIN, "Model training"), (COL_PCRP, "PCRP fingerprint"),
+                 (COL_EVAL, "Evaluation"), (COL_HYP, "Hypothesis tests")]]
+ax.legend(handles=legend_items, loc="center right", bbox_to_anchor=(1.0, 0.07), fontsize=FS_SUB, framealpha=0.9,
+          edgecolor=COL_EDGE, ncol=1, handlelength=1.2, labelspacing=0.25, borderpad=0.4)
 
-# Arrow from train to adv fine-tuning
-arrow(ax, 0.22, 0.485, 0.22, 0.435)
-
-# Stage 4: Adv fine-tuning
-box(ax, 0.22, 0.365, 0.34, 0.12,
-    "Adversarial fine-tuning (fine-tuned model)",
-    "3 epochs · $\\varepsilon{\\sim}\\mathrm{Uniform}[0,0.25]$\n5-step PGD · 18 mutable features",
-    color=COL_TRAIN)
-
-# Clean model + fine-tuned model both feed evaluation
-# Arrow from clean train box to evaluation
-arrow(ax, 0.33, 0.49, 0.50, 0.26)
-ax.text(0.455, 0.42, "clean\nmodel", ha="center", va="center",
-        fontsize=FONT_SIZE - 1, color="#444444", fontfamily="DejaVu Sans",
-        bbox=dict(fc="white", ec="none", pad=0.6), zorder=6)
-
-# Arrow from fine-tuned to evaluation
-arrow(ax, 0.30, 0.295, 0.36, 0.262)
-
-# Arrow from test set to evaluation
-arrow(ax, 0.78, 0.49, 0.62, 0.26)
-
-# Arrow from PCRP to evaluation
-arrow(ax, 0.5, 0.49, 0.5, 0.26)
-
-# Stage 5: Robustness evaluation
-box(ax, 0.5, 0.21, 0.56, 0.10,
-    "Robustness evaluation",
-    "$\\varepsilon \\in \\{0, 0.05, 0.10, 0.25, 0.50\\}$ · macro-F1 curves · PCRP discrepancy"
-    "  ·  H6: 5-step PGD, 1% subsample",
-    color=COL_EVAL)
-
-# Arrow to hypothesis tests
-arrow(ax, 0.5, 0.16, 0.5, 0.09)
-
-# Stage 6: Hypothesis tests
-box(ax, 0.5, 0.05, 0.56, 0.08,
-    "Hypothesis tests  H1 · H2 · H3 · H4 · H5 · H6",
-    color=COL_HYP)
-
-# ---- Title --------------------------------------------------------------
-ax.text(0.5, 1.0, "Adversarial Robustness Evaluation Workflow",
-        ha="center", va="bottom", fontsize=FONT_SIZE + 1,
-        fontweight="bold", fontfamily="DejaVu Sans")
-
-# ---- Legend -------------------------------------------------------------
-legend_items = [
-    mpatches.Patch(facecolor=COL_DATA,  edgecolor=COL_EDGE, label="Data"),
-    mpatches.Patch(facecolor=COL_TRAIN, edgecolor=COL_EDGE, label="Model training"),
-    mpatches.Patch(facecolor=COL_PCRP,  edgecolor=COL_EDGE, label="PCRP fingerprint"),
-    mpatches.Patch(facecolor=COL_EVAL,  edgecolor=COL_EDGE, label="Evaluation"),
-    mpatches.Patch(facecolor=COL_HYP,   edgecolor=COL_EDGE, label="Hypothesis tests"),
-]
-ax.legend(handles=legend_items, loc="lower right", bbox_to_anchor=(1.0, 0.0),
-          fontsize=FONT_SIZE - 1, framealpha=0.9, edgecolor=COL_EDGE, ncol=1)
-
-plt.tight_layout(pad=0.1)
-fig.savefig(OUT_PDF, dpi=DPI, bbox_inches="tight", format="pdf")
-fig.savefig(OUT_TIF, dpi=DPI, bbox_inches="tight", format="tiff",
-            pil_kwargs={"compression": "tiff_lzw"})
+fig.savefig(OUT_PDF, dpi=DPI, bbox_inches="tight", pad_inches=0.03, format="pdf")
+fig.savefig(OUT_TIF, dpi=DPI, bbox_inches="tight", pad_inches=0.03, format="tiff", pil_kwargs={"compression": "tiff_lzw"})
 plt.close(fig)
-print(f"Saved: {OUT_PDF}")
-print(f"Saved: {OUT_TIF}")
+print("Saved:", OUT_PDF)
+print("Saved:", OUT_TIF)

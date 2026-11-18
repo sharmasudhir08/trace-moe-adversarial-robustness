@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this code or data, please cite the paper."
-title: "Adversarial Robustness of Mixture-of-Experts IoMT Intrusion Detection with Protocol-Cluster Reference-Profile Analysis"
+title: "Adversarial Robustness of a Mixture-of-Experts Network Intrusion Detector: A Multi-Seed Evaluation with Protocol-Cluster Reference Profiles on Medical IoT Traffic"
 type: software
 authors:
   - given-names: Sudhir Kumar

@@ -25,5 +25,6 @@ training (29,478 removed for seed 42) are excluded before evaluation.
 ## What is NOT included in this release
 
 Raw traffic captures (PCAP files), processed flow feature files, model
-checkpoints, training history, and configuration files are not included due to
-size and local-path constraints.
+checkpoints, per-run result files for the main models, and configuration files are
+not included due to size and local-path constraints. Only the per-epoch training
+histories of the ablation runs are bundled (`results/ablation_history/`).

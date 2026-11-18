@@ -11,17 +11,17 @@ Data source (manuscript tables only — no new run)
     BiLSTM-DNN   :  3.07
     TF-SAGE-lite :  2.51
 
-  Table 4 (tab:h2h3):  AUC-robustness mean ± std over 5 seeds
+  Table 4 (tab:h2h3):  AUC-robustness mean ± sample SD (ddof=1) over 5 seeds
     Clean-trained:
       TRACE-MoE    : 0.636 ± 0.003
-      TF-SAGE-lite : 0.648 ± 0.022
-      Transformer  : 0.578 ± 0.036
-      BiLSTM-DNN   : 0.486 ± 0.032
+      TF-SAGE-lite : 0.648 ± 0.025
+      Transformer  : 0.578 ± 0.040
+      BiLSTM-DNN   : 0.486 ± 0.036
     Adv-FT:
-      TRACE-MoE    : 0.694 ± 0.014
-      TF-SAGE-lite : 0.685 ± 0.017
-      Transformer  : 0.676 ± 0.014
-      BiLSTM-DNN   : 0.608 ± 0.014
+      TRACE-MoE    : 0.694 ± 0.016
+      TF-SAGE-lite : 0.685 ± 0.019
+      Transformer  : 0.676 ± 0.016
+      BiLSTM-DNN   : 0.608 ± 0.015
 
 Output files
 ------------
@@ -59,10 +59,10 @@ OUT_TIF = FIG_DIR / "Fig5_cost_robustness.tif"
 # ---------------------------------------------------------------------------
 MODELS = [
     # (display_name, MFLOPs, auc_clean, sd_clean, auc_adv, sd_adv)
-    ("TRACE-MoE",    11.54, 0.636, 0.003, 0.694, 0.014),
-    ("Transformer",   8.84, 0.578, 0.036, 0.676, 0.014),
-    ("BiLSTM-DNN",    3.07, 0.486, 0.032, 0.608, 0.014),
-    ("TF-SAGE-lite",  2.51, 0.648, 0.022, 0.685, 0.017),
+    ("TRACE-MoE",    11.54, 0.636, 0.003, 0.694, 0.016),
+    ("Transformer",   8.84, 0.578, 0.040, 0.676, 0.016),
+    ("BiLSTM-DNN",    3.07, 0.486, 0.036, 0.608, 0.015),
+    ("TF-SAGE-lite",  2.51, 0.648, 0.025, 0.685, 0.019),
 ]
 
 # Colour per model (same palette as Fig 3)
@@ -76,10 +76,10 @@ COLOURS = {
 # ---------------------------------------------------------------------------
 # Figure
 # ---------------------------------------------------------------------------
-FIG_WIDTH_INCH  = 88 / 25.4   # single-column
-FIG_HEIGHT_INCH = 80 / 25.4
+FIG_WIDTH_INCH  = 4.94   # printed width (included without scaling)
+FIG_HEIGHT_INCH = 3.7
 DPI = 600
-FONT_SIZE = 7
+FONT_SIZE = 9
 
 fig, ax = plt.subplots(figsize=(FIG_WIDTH_INCH, FIG_HEIGHT_INCH), dpi=DPI)
 fig.patch.set_facecolor("white")
@@ -139,11 +139,11 @@ ax.legend(fontsize=FONT_SIZE - 1, framealpha=0.9, edgecolor="#aaaaaa",
           loc="lower right", handlelength=1.0)
 
 # Hollow / filled legend annotation
-ax.text(0.03, 0.97,
+ax.text(0.5, -0.24,
         "○ Clean model   ● After adv. fine-tuning\n"
         "Arrows show improvement from adv-FT",
         transform=ax.transAxes,
-        fontsize=FONT_SIZE - 1.5, va="top", ha="left",
+        fontsize=FONT_SIZE - 1, va="top", ha="center",
         color="#444444", fontfamily="DejaVu Sans",
         linespacing=1.4)
 
