@@ -1,0 +1,17 @@
+# Paper 4 part 2: claims and evidence (all exploratory, post hoc; 21 Nov 2026)
+Checks: every pass criterion of the brief was met (U6 FAR 1e-16; U12 threshold 4.8e-7; U1 shares and binary rate 1e-16; U11 H4 reproduction 0; U10 energy from float16 logits 5.7e-6; U5 FAR and caught-any 1e-16). U3 is in ../U3.
+
+| ID | Claim | Evidence file | Class |
+|---|---|---|---|
+| U1 | Held-out flood windows are absorbed by a sibling in the 19-class head: TRACE-MoE sends 0.985 of MQTT-DDoS publish flood to MQTT-DoS publish flood and about 1.0 of TCP/IP DoS-UDP to TCP/IP DDoS-UDP; 0.59 of ARP spoofing goes to Benign | U1/absorption_19.csv | exploratory, directly measured |
+| U2 | KL head-disagreement score is about equal to energy for TRACE-MoE (-0.002) and Transformer (-0.013), better for BiLSTM-DNN (+0.088); the inconsistency indicator is worse for all three | U2/head_disagreement_auroc.csv, pooled_table_for_manuscript.csv | exploratory |
+| U4 | Routing rarity separates held-out windows (AUROC 0.54 to 0.89 by class) but its class pattern is unrelated to energy AUROC (Spearman 0.10, n = 5, descriptive); estimated on known test windows with cross-fitting because no validation routing is saved | U4/routing_rarity.csv | exploratory |
+| U5 | Known false-alarm rate by transport token is far from uniform: low for ICMP and UDP, 0.07 to 0.08 for TCP, 0.27 to 0.31 for mixed and 0.38 to 0.52 for other/IP windows (energy flag). Wi-Fi vs MQTT split not possible (no per-window flag) | U5/per_protocol_metrics.csv | exploratory |
+| U6 | Benign and Recon-OS_Scan/Recon-Port_Scan windows carry the false alarms (mean flag rate above 5% for Benign and Recon-OS_Scan in all five held-out-class settings, all three models) | U6/far_by_known_class.csv | exploratory |
+| U7 | Averaging seed energy z-scores raises AUROC for TRACE-MoE and the Transformer on ARP, malformed MQTT and Recon-VulScan (+0.002 to +0.024) but not on the two flood classes (-0.005 to -0.039); for BiLSTM-DNN it varies (-0.137 on MQTT-DDoS publish flood, +0.117 on TCP/IP DoS-UDP); TRACE-MoE misses MQTT-DDoS publish flood windows in all five seeds for 0.92 of the held-out windows, and TCP/IP DoS-UDP windows for 1.00 | U7/seed_ensemble.csv, miss_overlap.csv | exploratory |
+| U8 | The first held-out window is flagged at position 0 in nearly all runs (safety view); time to first detection is not the limiting factor | U8/time_to_detect_summary.csv | exploratory, descriptive |
+| U9 | Energy detects known-class errors about as MSP does (TRACE-MoE +0.021 AUROC, Transformer -0.020, BiLSTM-DNN -0.157 for energy minus MSP) | U9/misclassification_detection.csv | exploratory |
+| U10 | Logit norm and the maximum logit minus the mean do not beat energy for TRACE-MoE or Transformer; generalized entropy is about equal (-0.015) for TRACE-MoE; all three gain for BiLSTM-DNN (+0.10 to +0.13) | U10/logit_scores.csv | exploratory |
+| U11 | Largest per-class F1 losses are on non-sibling known classes (for example ARP spoofing for the Transformer when MQTT-DDoS publish flood is held out, 0.110 [0.071, 0.149]) | U11/h4_per_class.csv | exploratory |
+| U12 | Energy-flag operating points (TRACE-MoE caught/known FAR): 1%: 0.28/0.009; 2%: 0.34/0.016; 5%: 0.50/0.042; 10%: 0.56/0.094 | U12/threshold_quantiles.csv | exploratory |
+| T3 | kNN-50 (+0.228) and Mahalanobis (+0.174) raise TRACE-MoE AUROC over energy; similar for the other models; Mahalanobis worse on Recon-VulScan | ../T3/paired_vs_energy.csv, pooled_table_for_manuscript.csv | exploratory |

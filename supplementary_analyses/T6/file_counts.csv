@@ -1,0 +1,6 @@
+held_out_class,n_heldout_files,n_known_files
+ARP_Spoofing,1,20
+Recon-VulScan,1,20
+MQTT-Malformed_Data,1,20
+TCP_IP-DoS-UDP,1,20
+MQTT-DDoS-Publish_Flood,1,20

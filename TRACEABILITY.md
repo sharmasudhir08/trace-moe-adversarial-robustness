@@ -1,44 +1,109 @@
-# Traceability: paper tables and figures to release artefacts
+# Traceability for the final manuscript (v6l, 21 November 2026)
 
-Maps each table and figure of the paper to the result file it comes from and the script that produced it.
-All paths are relative to the root of this release. Per-run `metrics.json` files and model checkpoints are not bundled;
-rows that depend on them are marked (not bundled) and can be checked only against the summaries listed here.
+Manuscript: "Unseen-Attack Detection in the Internet of Medical Things: A Leave-One-Attack-Out Evaluation of Sequence Models, Energy Scores and Feature-Space Profiles" (IEEE OJ-COMS, OJCOMS-07851-2026).
 
-| Paper item | Content | Source file(s) | Producing script |
+## 1. Fingerprints
+
+| File | SHA-256 |
+|---|---|
+| paper4_ojcoms.tex (v6l) | `33deeed9f1202bd28261e9bf1b404320776e19fd70977185af2fa826d5c39902` |
+| paper4_refs.bib | `780db18dc78e238316eeec843a833963a4b4b7273170eb76ebc72f72f6744bff` |
+| Paper 4 v7.pdf (v6l compiled by the author on Overleaf) | `10a38731f69af3e611229ed2431f3e5cec12b4241ea55d93a58d7e802fbf4e4e` |
+| paper4_ojcoms_overleaf_20261121_v6l.zip | `4f3120b758b0a2c8a6b37766c474e4fc65880906ae9c892ede79ba5c70b8a9f4` |
+
+SHA-256 of every file of this folder: `SHASUMS`. Supplementary files: listed in `SUPPLEMENTARY_ANALYSES.md`.
+
+## 2. Tables (automated row-wise check)
+
+Each body row of Tables 1 to 5 of v6l was matched to its row in the CSV (key: model or baseline and held-out class; Table 1 and Table 5 by class). Every decimal number of the row was compared with the named CSV column (tolerance: half a unit of the last printed digit) and the verdict word was compared with the CSV verdict (the table adds the subtype in brackets).
+
+| Table (tex label) | Source in `results/` | Rows | Decimal numbers compared | Verdict mismatches |
+|---|---|---|---|---|
+| tab:h1 | H1_safety_view.csv | 5 | 40 | 0 |
+| tab:h3 | H3_trace_moe_vs_baselines.csv | 10 | 30 | 0 |
+| tab:h2 | H2_energy_vs_msp.csv | 15 | 45 | 0 |
+| tab:h4 | H4_closed_set_degradation.csv | 15 | 45 | 0 |
+| tab:h5 | twin_h5_verdict.csv | 5 | 20 | 0 |
+
+Total: 50 rows, 180 decimal numbers compared, **0 mismatches** (none).
+
+
+Integer cells (the number of held-out windows N in Table 1) are not covered by this check; the window counts were compared separately with `per_run.csv` (identical across seeds and architectures). All tables of v6l come from `results/` CSVs; the exploratory tables of earlier versions are written as text in v6l.
+
+## 3. Figures
+
+| Figure label | File in the manuscript package | SHA-256 (start) | Identical to `results/`-side source |
 |---|---|---|---|
-| Table 1 | Architectures: parameters, MFLOPs per window | Analytic count (see paper) | none |
-| Table 2 | TRACE-MoE hyperparameters and training settings | `src/trace_iomt/config.py`, `scripts/04_train_deep.py` | none |
-| Table 3 | Hypotheses and decision rules | Manuscript | none |
-| Table 4 (H1) | Clean macro-F1 change after adversarial fine-tuning | per-run `metrics.json` (not bundled) | `scripts/06_robustness.py` |
-| Table 5 (H2, H3) | AUC-robustness and worst-case F1, five seeds | per-run `metrics.json` (not bundled) | `scripts/06_robustness.py` |
-| Table 6 | Paired bootstrap 95% CIs | `results/bootstrap_cis.json`, `results/bootstrap_cis.md` | `scripts/06_robustness.py` |
-| Table 7 (H4) | Macro-F1 at eps 0.25 per seed after fine-tuning, with TRACE-MoE rank | per-run `metrics.json` (not bundled) | `scripts/06_robustness.py` |
-| Table 8 | Mean macro-F1 rank per budget after fine-tuning | per-run `metrics.json` (not bundled) | `scripts/06_robustness.py` |
-| Table 9 | Router instability under PGD (clean-trained TRACE-MoE) | `results/e4_routing_stability/routing_instability.json` | `scripts/e4_routing_stability.py` |
-| Table 10 | Transfer-attack matrix at eps 0.25 | per-run `transfer_matrix.json` (not bundled) | `scripts/06_robustness.py` |
-| Table 11 | White-box and cross-architecture ASR by budget | `results/e6_transfer_multi_eps/transfer_multi_eps.json` | `scripts/e6_transfer_multi_eps.py` |
-| Table 12, Fig 4 | PCRP discrepancy trajectories | `results/twin_h6/*_twin_h6_track.json`, `results/twin_h6/twin_h6_per_seed.csv` | `scripts/06_robustness.py` |
-| Table 13 | H6 verdict | `results/twin_h6/twin_h6_verdict.csv`, `.json`, `.md` | `scripts/06_robustness.py` |
-| Table 14 | Component ablation (seeds 43, 44) | `results/ablation_history/`, per-run `metrics.json` (not bundled) | `scripts/05_ablation.py`, `scripts/analyze_h5.py` |
-| Table 15 | PCRP variants, ROC-AUC | `results/e5_pcrp_variants/pcrp_variants.json` | `scripts/e5_pcrp_variants.py` |
-| Table 16 | PCRP true-positive rate at fixed false-positive rate | `results/saved_artifact_analyses/s1_pcrp_tpr_summary.csv`, `s1_pcrp_tpr_table.tex` | `scripts/p2_s1_pcrp_tpr.py` |
-| Table 17 | PGD with restarts | `results/e1_pgd_restarts/restarts5_seed42.json` | `scripts/e1_pgd_restarts.py` |
-| Table 18 | Class-wise F1 after fine-tuning | `results/saved_artifact_analyses/s2_classwise_long.csv` | `scripts/p2_s2_classwise.py` |
-| Table 19 | Hypothesis verdict summary | Tables 4 to 6, 13, 14 | none |
-| Fig 1 | Data-flow architecture | none (drawing) | `figures/gen_fig1_dataflow.py` |
-| Fig 2 | Evaluation workflow | none (drawing) | `figures/gen_fig2_workflow.py` |
-| Fig 3 | Robustness curves, mean +/- 1 SD over five seeds | per-run `metrics.json` (not bundled) | `figures/gen_fig3_robustness.py` |
-| Fig 4 | PCRP discrepancy versus epsilon | `results/twin_h6/*_twin_h6_track.json` | `figures/gen_fig4_pcrp.py` |
-| Fig 5 | Cost versus robustness | Tables 1 and 5 | `figures/gen_fig5_cost_robustness.py` |
+| fig:arch | sharm1.png | 4ecbf90156d9fe7b | n/a |
+| fig:h3 | figures_v1_4/fig2_h3_architecture_comparison.pdf | 588828c83f0b3a40 | True |
 
-## Statements in the text that rest on saved-artifact analyses
+Figure 1 (architecture schematic, `sharm1.png` in the manuscript package, not in this folder) is a drawing, not a result; its content was compared with `src/trace_iomt/models/networks.py` in the 21 November audit. Its origin file is not recorded here.
 
-| Text item | Source file(s) | Producing script |
+## 4. Prose numbers
+
+Numbers in the prose were checked on 21 November in two manual audits (about 60 numbers recomputed from `results/`, `supplementary_analyses/` and the saved score exports). These audits are not exhaustive. Where a prose number comes from a supplementary analysis, the source is listed here:
+
+| Statement in the text | Source |
+|---|---|
+| Benign alert rates (0.88, 0.997, 0.50; 0.46, 0.88, 0.98) | `supplementary_analyses/from_20261120/V4/benign_flag_rate_summary.csv` |
+| Event rule: 2.3 events per 10,000 Benign windows, 0.998 (windows with a full 64-window history), 0.983 (all held-out windows) | `supplementary_analyses/from_20261120/T9/` (0.998) and `supplementary_analyses/T9/event_level.csv` (0.983) |
+| Decomposition of the safety view | `supplementary_analyses/T1/decomposition_per_seed.csv`, `arp_seed_diagnosis.csv` |
+| Energy temperature sensitivity | `supplementary_analyses/T3/per_run_feature_scores.csv` (float32 columns) |
+| Spearman correlation of energy and 1 - MSP (ESA2) | `supplementary_analyses/T11/esa2_spearman.csv` |
+| FPR@95 pooled values | `supplementary_analyses/T2/per_run_operating_points.csv` |
+| Further open-set scores (ESA3) | `supplementary_analyses/T3/`, `supplementary_analyses/part2/U10/`, `part2/U2/`, `part2/pooled_table_for_manuscript.csv` |
+| Absorption of held-out windows by closely related classes | `supplementary_analyses/part2/U1/absorption_19.csv` |
+| Parameter counts, checkpoint sizes, FLOPs | `results_v3_paper3/zero_day/<run>/metrics.json` and `model.pt` sizes (not in this repository), `supplementary_analyses/T8/` |
+| Inference timing | `results_v3_paper3/inference_benchmark_20261118/` (not in this repository; summary in the manuscript) |
+
+## 5. Supplementary analyses
+
+All are post hoc and exploratory; none changes a verdict. Task folders under `supplementary_analyses/`: T1, T2, T3, T4, T5, T6, T8, T9, T10, T11, U3, and `part2/` (U1, U2, U4 to U12). Each has a README with command, script SHA-256, inputs and checks. Claims and evidence: `supplementary_analyses/part2/claims_part2.md`.
+
+## 6. References
+
+27 cite keys are used in v6l; all are present in `paper4_refs.bib` (static check). Metadata of keys other than ref34 to ref39 was verified on 16 November (see the earlier verification record); metadata of ref34 to ref39 (added on 21 November) has NOT been verified against the sources.
+
+| Key | Title (start) | Added 21 Nov, not verified |
 |---|---|---|
-| Router instability versus eps 0.25 deficit (Spearman, five seeds) | `results/saved_artifact_analyses/s3_routing_vs_deficit.csv` | `scripts/p2_s3_routing_vs_deficit.py` |
-| Conditional ASR bounds, per-class degradation, class variance, transfer asymmetry, clean-versus-attacked F1 | `results/saved_artifact_analyses/a_suite/` | `scripts/p2_a_suite_saved_artifacts.py` |
-| PCRP score distributions and detection by attack class | `results/saved_artifact_analyses/s6*.csv`, `s6_analysis.md`, `results/e5_pcrp_perwindow/` | `scripts/p2_s6_pcrp_perwindow_export.py`, `scripts/p2_s6_analysis.py` |
+| ref1 | CICIoMT2024: Attack Vectors in Healthcare Devices, a Multi-Protocol Dataset for Assessing IoMT  |  |
+| ref2 | Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer |  |
+| ref3 | Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity |  |
+| ref4 | Attention Is All You Need |  |
+| ref5 | Long Short-Term Memory |  |
+| ref6 | A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks |  |
+| ref7 | Energy-Based Out-of-Distribution Detection |  |
+| ref9 | A Novel Open Set Energy-based Flow Classifier for Network Intrusion Detection |  |
+| ref10 | Enhancing Trustworthiness in ML-Based Network Intrusion Detection with Uncertainty Quantificati |  |
+| ref12 | A Comprehensive and Systematic Literature Review on Intrusion Detection Systems in the Internet |  |
+| ref13 | Enhancing IoMT Network Threat Detection with Data Balancing for Multi-Class Attack Classificati |  |
+| ref14 | HBiLD-IDS: An Efficient Hybrid BiLSTM-DNN Model for Real-Time Intrusion Detection in IoMT Netwo |  |
+| ref16 | Explainable Zero-Day Attack Detection in IoMT Using Transformer-Based Time-Series Modeling |  |
+| ref20 | Evaluating and Enhancing Intrusion Detection Systems in IoMT: The Importance of Domain-Specific |  |
+| ref24 | Learning Phrase Representations Using RNN Encoder-Decoder for Statistical Machine Translation |  |
+| ref26 | Focal Loss for Dense Object Detection |  |
+| ref27 | Long-Tail Learning via Logit Adjustment |  |
+| ref29 | Dos and Don'ts of Machine Learning in Computer Security |  |
+| ref31 | A Hierarchical IDS for Zero-Day Attack Detection in Internet of Medical Things Networks |  |
+| ref32 | FEVER-OOD: Free Energy Vulnerability Elimination for Robust Out-of-Distribution Detection |  |
+| ref33 | Energy-Based Hopfield Boosting for Out-of-Distribution Detection |  |
+| ref34 | A Simple Unified Framework for Detecting Out-of-Distribution Samples and Adversarial Attacks | yes |
+| ref35 | A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices | yes |
+| ref36 | Out-of-Distribution Detection with Deep Nearest Neighbors | yes |
+| ref37 | ReAct: Out-of-Distribution Detection with Rectified Activations | yes |
+| ref38 | ViM: Out-of-Distribution with Virtual-Logit Matching | yes |
+| ref39 | GEN: Pushing the Limits of Softmax-Based Out-of-Distribution Detection | yes |
 
-## Checksums
+## 7. Not covered
 
-`SHASUMS` lists the SHA-256 of every file in this release except itself. Verify with `sha256sum -c SHASUMS` from the release root.
+- Each held-out class has one test file; a file-level cluster bootstrap is undefined (see `supplementary_analyses/T6/`).
+- The device-level audit of the raw files was not done (T7 not approved).
+- Training runs themselves are not reproduced here. The hypotheses, decision rules and timeline are in `ANALYSIS_PLAN.md`.
+
+## 8. Files held back from `results/`
+
+The following files of the internal verdict folder were not copied because they describe earlier charter versions or deferred analyses: `ESA2_DEFERRED.md`, `SURPRISES_v1_0_to_v1_1.md`, `SURPRISES_v1_1_3seed_to_v1_3_5seed.md`, `VERDICT_SUMMARY_v1_1.md`, `VERDICT_SUMMARY_v1_3_5seed.md`. Older copies of `results/` and `figures/` are not part of this folder.
+
+## 9. Code
+
+`src/trace_iomt/` holds the 17 modules imported by the Paper 4 scripts (models in `models/networks.py`, `heads.py`, `factory.py`; data pipeline in `data/`; training in `train.py`; abstention in `abstain.py`). `scripts/` holds the run, verdict, table and figure scripts (`07_unknown_attacks.py` training and evaluation; `24_` and `25_twin_*` the H5 profile; `paper4_h8_verdict.py` the H1 to H4 and ESA1 aggregation; `paper4_build_table.py`; `paper4_figures_v1_4.py`). They were copied with text-only edits (comments, messages and generated markdown; no computation changed); SHA-256 values of the files in this folder are in `SHASUMS`. The H4 reference (full 19-class models) comes from a separate earlier run set that is not part of this folder.

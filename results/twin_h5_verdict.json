@@ -1,0 +1,372 @@
+{
+  "charter_version": "Paper 4 Charter v1.2 (DRAFT)",
+  "per_pair": [
+    {
+      "model": "trace_moe",
+      "held_out_class": "ARP_Spoofing",
+      "n_seeds": 5,
+      "mean_auroc": 0.9214565449225217,
+      "ci_lo": 0.9195786763760024,
+      "ci_hi": 0.9230330824110451,
+      "mean_fpr_at_95tpr": 0.368758362937339,
+      "per_seed_auroc": [
+        0.9198883974425389,
+        0.923015461393604,
+        0.918329841014623,
+        0.9230854645061745,
+        0.9229635602556685
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "trace_moe",
+      "held_out_class": "Recon-VulScan",
+      "n_seeds": 5,
+      "mean_auroc": 0.7655839497669692,
+      "ci_lo": 0.7641927725756312,
+      "ci_hi": 0.7673602627431768,
+      "mean_fpr_at_95tpr": 0.7213669015551384,
+      "per_seed_auroc": [
+        0.7641592837415427,
+        0.764846373302977,
+        0.7660710197815008,
+        0.7689436109627787,
+        0.7638994610460468
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "model": "trace_moe",
+      "held_out_class": "MQTT-Malformed_Data",
+      "n_seeds": 5,
+      "mean_auroc": 0.887883195033948,
+      "ci_lo": 0.8857402831971551,
+      "ci_hi": 0.889628957317423,
+      "mean_fpr_at_95tpr": 0.318730646307398,
+      "per_seed_auroc": [
+        0.8840102971758366,
+        0.8893194802331967,
+        0.8872137501204014,
+        0.8905371854111721,
+        0.888335262229133
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "trace_moe",
+      "held_out_class": "TCP_IP-DoS-UDP",
+      "n_seeds": 5,
+      "mean_auroc": 0.9512997518849831,
+      "ci_lo": 0.9314467007446124,
+      "ci_hi": 0.9711518274366673,
+      "mean_fpr_at_95tpr": 0.10742355210776697,
+      "per_seed_auroc": [
+        0.9712420383019511,
+        0.9214738130212965,
+        0.9711521085684699,
+        0.9709708434424947,
+        0.9216599560907027
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "trace_moe",
+      "held_out_class": "MQTT-DDoS-Publish_Flood",
+      "n_seeds": 5,
+      "mean_auroc": 0.9361292020172716,
+      "ci_lo": 0.9359608024337127,
+      "ci_hi": 0.9362650727905886,
+      "mean_fpr_at_95tpr": 0.13256477734652036,
+      "per_seed_auroc": [
+        0.9358122845493868,
+        0.9361471652057212,
+        0.9362525665133219,
+        0.9363194018108465,
+        0.9361145920070811
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "transformer",
+      "held_out_class": "ARP_Spoofing",
+      "n_seeds": 5,
+      "mean_auroc": 0.9214565449225217,
+      "ci_lo": 0.9195786763760024,
+      "ci_hi": 0.9230330824110451,
+      "mean_fpr_at_95tpr": 0.368758362937339,
+      "per_seed_auroc": [
+        0.9198883974425389,
+        0.923015461393604,
+        0.918329841014623,
+        0.9230854645061745,
+        0.9229635602556685
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "transformer",
+      "held_out_class": "Recon-VulScan",
+      "n_seeds": 5,
+      "mean_auroc": 0.7655839497669692,
+      "ci_lo": 0.7641927725756312,
+      "ci_hi": 0.7673602627431768,
+      "mean_fpr_at_95tpr": 0.7213669015551384,
+      "per_seed_auroc": [
+        0.7641592837415427,
+        0.764846373302977,
+        0.7660710197815008,
+        0.7689436109627787,
+        0.7638994610460468
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "model": "transformer",
+      "held_out_class": "MQTT-Malformed_Data",
+      "n_seeds": 5,
+      "mean_auroc": 0.887883195033948,
+      "ci_lo": 0.8857402831971551,
+      "ci_hi": 0.889628957317423,
+      "mean_fpr_at_95tpr": 0.318730646307398,
+      "per_seed_auroc": [
+        0.8840102971758366,
+        0.8893194802331967,
+        0.8872137501204014,
+        0.8905371854111721,
+        0.888335262229133
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "transformer",
+      "held_out_class": "TCP_IP-DoS-UDP",
+      "n_seeds": 5,
+      "mean_auroc": 0.9512997518849831,
+      "ci_lo": 0.9314467007446124,
+      "ci_hi": 0.9711518274366673,
+      "mean_fpr_at_95tpr": 0.10742355210776697,
+      "per_seed_auroc": [
+        0.9712420383019511,
+        0.9214738130212965,
+        0.9711521085684699,
+        0.9709708434424947,
+        0.9216599560907027
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "transformer",
+      "held_out_class": "MQTT-DDoS-Publish_Flood",
+      "n_seeds": 5,
+      "mean_auroc": 0.9361292020172716,
+      "ci_lo": 0.9359608024337127,
+      "ci_hi": 0.9362650727905886,
+      "mean_fpr_at_95tpr": 0.13256477734652036,
+      "per_seed_auroc": [
+        0.9358122845493868,
+        0.9361471652057212,
+        0.9362525665133219,
+        0.9363194018108465,
+        0.9361145920070811
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "bilstm_dnn",
+      "held_out_class": "ARP_Spoofing",
+      "n_seeds": 5,
+      "mean_auroc": 0.9214565449225217,
+      "ci_lo": 0.9195786763760024,
+      "ci_hi": 0.9230330824110451,
+      "mean_fpr_at_95tpr": 0.368758362937339,
+      "per_seed_auroc": [
+        0.9198883974425389,
+        0.923015461393604,
+        0.918329841014623,
+        0.9230854645061745,
+        0.9229635602556685
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "bilstm_dnn",
+      "held_out_class": "Recon-VulScan",
+      "n_seeds": 5,
+      "mean_auroc": 0.7655839497669692,
+      "ci_lo": 0.7641927725756312,
+      "ci_hi": 0.7673602627431768,
+      "mean_fpr_at_95tpr": 0.7213669015551384,
+      "per_seed_auroc": [
+        0.7641592837415427,
+        0.764846373302977,
+        0.7660710197815008,
+        0.7689436109627787,
+        0.7638994610460468
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "model": "bilstm_dnn",
+      "held_out_class": "MQTT-Malformed_Data",
+      "n_seeds": 5,
+      "mean_auroc": 0.887883195033948,
+      "ci_lo": 0.8857402831971551,
+      "ci_hi": 0.889628957317423,
+      "mean_fpr_at_95tpr": 0.318730646307398,
+      "per_seed_auroc": [
+        0.8840102971758366,
+        0.8893194802331967,
+        0.8872137501204014,
+        0.8905371854111721,
+        0.888335262229133
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "bilstm_dnn",
+      "held_out_class": "TCP_IP-DoS-UDP",
+      "n_seeds": 5,
+      "mean_auroc": 0.9512997518849831,
+      "ci_lo": 0.9314467007446124,
+      "ci_hi": 0.9711518274366673,
+      "mean_fpr_at_95tpr": 0.10742355210776697,
+      "per_seed_auroc": [
+        0.9712420383019511,
+        0.9214738130212965,
+        0.9711521085684699,
+        0.9709708434424947,
+        0.9216599560907027
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "model": "bilstm_dnn",
+      "held_out_class": "MQTT-DDoS-Publish_Flood",
+      "n_seeds": 5,
+      "mean_auroc": 0.9361292020172716,
+      "ci_lo": 0.9359608024337127,
+      "ci_hi": 0.9362650727905886,
+      "mean_fpr_at_95tpr": 0.13256477734652036,
+      "per_seed_auroc": [
+        0.9358122845493868,
+        0.9361471652057212,
+        0.9362525665133219,
+        0.9363194018108465,
+        0.9361145920070811
+      ],
+      "seeds_used": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "verdict": "SUPPORTED"
+    }
+  ],
+  "per_model_overall": {
+    "trace_moe": "SUPPORTED (strong, overall)",
+    "transformer": "SUPPORTED (strong, overall)",
+    "bilstm_dnn": "SUPPORTED (strong, overall)"
+  },
+  "bootstrap_n": 10000,
+  "rng_seed": 42
+}

@@ -1,0 +1,22 @@
+model,held_out_class,n_seeds,mean_auroc,ci_lo,ci_hi,mean_fpr_at_95tpr,verdict
+trace_moe,ARP_Spoofing,5,0.921457,0.919579,0.923033,0.368758,SUPPORTED
+trace_moe,Recon-VulScan,5,0.765584,0.764193,0.767360,0.721367,INCONCLUSIVE
+trace_moe,MQTT-Malformed_Data,5,0.887883,0.885740,0.889629,0.318731,SUPPORTED
+trace_moe,TCP_IP-DoS-UDP,5,0.951300,0.931447,0.971152,0.107424,SUPPORTED
+trace_moe,MQTT-DDoS-Publish_Flood,5,0.936129,0.935961,0.936265,0.132565,SUPPORTED
+transformer,ARP_Spoofing,5,0.921457,0.919579,0.923033,0.368758,SUPPORTED
+transformer,Recon-VulScan,5,0.765584,0.764193,0.767360,0.721367,INCONCLUSIVE
+transformer,MQTT-Malformed_Data,5,0.887883,0.885740,0.889629,0.318731,SUPPORTED
+transformer,TCP_IP-DoS-UDP,5,0.951300,0.931447,0.971152,0.107424,SUPPORTED
+transformer,MQTT-DDoS-Publish_Flood,5,0.936129,0.935961,0.936265,0.132565,SUPPORTED
+bilstm_dnn,ARP_Spoofing,5,0.921457,0.919579,0.923033,0.368758,SUPPORTED
+bilstm_dnn,Recon-VulScan,5,0.765584,0.764193,0.767360,0.721367,INCONCLUSIVE
+bilstm_dnn,MQTT-Malformed_Data,5,0.887883,0.885740,0.889629,0.318731,SUPPORTED
+bilstm_dnn,TCP_IP-DoS-UDP,5,0.951300,0.931447,0.971152,0.107424,SUPPORTED
+bilstm_dnn,MQTT-DDoS-Publish_Flood,5,0.936129,0.935961,0.936265,0.132565,SUPPORTED
+
+# overall per model
+model,overall_verdict
+trace_moe,SUPPORTED (strong, overall)
+transformer,SUPPORTED (strong, overall)
+bilstm_dnn,SUPPORTED (strong, overall)

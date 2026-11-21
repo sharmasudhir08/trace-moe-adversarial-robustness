@@ -1,14 +1,26 @@
 cff-version: 1.2.0
-message: "If you use this code or data, please cite the paper."
-title: "Adversarial Robustness of a Mixture-of-Experts Network Intrusion Detector: A Multi-Seed Evaluation with Protocol-Cluster Reference Profiles on Medical IoT Traffic"
+message: "If you use this repository, please cite it as below."
+title: "Unseen-Attack Detection in the Internet of Medical Things: A Leave-One-Attack-Out Evaluation of Sequence Models, Energy Scores and Feature-Space Profiles"
 type: software
 authors:
-  - given-names: Sudhir Kumar
-    family-names: Sharma
-    affiliation: Sharda University
-  - given-names: Sneha
-    family-names: Vasishth
-    affiliation: LeewayHertz
-repository-code: "https://github.com/sharmasudhir08/trace-moe-adversarial-robustness"
+  - family-names: Sharma
+    given-names: Sudhir Kumar
+    orcid: "https://orcid.org/0000-0003-4838-8481"
+    affiliation: "Sharda School of Computing Science and Engineering, Sharda University"
+  - family-names: Vasishth
+    given-names: Sneha
+    orcid: "https://orcid.org/0009-0003-7475-5131"
+    affiliation: "LeewayHertz"
+repository-code: "https://github.com/sharmasudhir08/iomt-unseen-attack-detection-loao"
 license: MIT
-year: 2026
+date-released: "2026-11-21"
+abstract: "Code, results and traceability files for a leave-one-attack-out evaluation of three sequence models (TRACE-MoE, a Transformer and a BiLSTM-DNN), energy-based and feature-space scores for unseen-attack detection on the Wi-Fi and MQTT subset of CICIoMT2024: five held-out attack classes, five seeds, 75 runs."
+keywords:
+  - "CICIoMT2024"
+  - "energy-based out-of-distribution detection"
+  - "Internet of Medical Things"
+  - "intrusion detection"
+  - "leave-one-attack-out evaluation"
+  - "mixture-of-experts"
+  - "open-set recognition"
+  - "zero-day attack detection"

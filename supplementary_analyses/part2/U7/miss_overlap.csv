@@ -1,0 +1,16 @@
+model,held_out_class,mean_miss_rate,mean_pairwise_jaccard,share_missed_by_all_5,share_missed_by_any,expected_share_all_5_if_independent
+trace_moe,ARP_Spoofing,0.18276,0.14279,0.00752,0.67033,0.0
+trace_moe,MQTT-DDoS-Publish_Flood,0.9775,0.96464,0.92251,0.99988,0.89163
+trace_moe,MQTT-Malformed_Data,0.12448,0.1822,0.00635,0.35855,1e-05
+trace_moe,Recon-VulScan,0.21102,0.51448,0.10236,0.4252,0.00033
+trace_moe,TCP_IP-DoS-UDP,0.9999,0.99991,0.99974,0.99995,0.9995
+transformer,ARP_Spoofing,0.03459,0.38021,0.01099,0.07692,0.0
+transformer,MQTT-DDoS-Publish_Flood,0.9776,0.97018,0.93929,0.99952,0.89219
+transformer,MQTT-Malformed_Data,0.04873,0.01967,0.0,0.21594,0.0
+transformer,Recon-VulScan,0.13681,0.52788,0.0561,0.23917,5e-05
+transformer,TCP_IP-DoS-UDP,0.99993,0.99992,0.99982,0.99999,0.99963
+bilstm_dnn,ARP_Spoofing,0.30873,0.58142,0.17987,0.52111,0.00244
+bilstm_dnn,MQTT-DDoS-Publish_Flood,0.87594,0.89315,0.78491,0.98191,0.51394
+bilstm_dnn,MQTT-Malformed_Data,0.41166,0.27682,0.05658,0.99307,0.00444
+bilstm_dnn,Recon-VulScan,0.64193,0.57274,0.27461,0.9626,0.10311
+bilstm_dnn,TCP_IP-DoS-UDP,0.87972,0.79098,0.53222,0.99736,0.50357

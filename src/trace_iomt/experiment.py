@@ -13,6 +13,7 @@ overwrite the first result; the second one lands in <name>__v2, the third in <na
 Every run also appends one JSON line to results/registry.jsonl so you have one ledger of every run ever.
 """
 import json
+import os
 import platform
 import time
 from pathlib import Path
@@ -174,14 +175,24 @@ def save_run(d, cfg, meta, test_metrics, val_metrics=None, history=None, y_true=
     _append_registry(cfg, meta, test_metrics, d)
 
 
+def build_run_windows(df, cfg, regime, seed, T=None, logger=None):
+    """Windowed arrays for one run: the exact steps run_deep performs when it is given no windows.
+    Lets a single-run process build the windows first and then release the full table before training."""
+    set_seed(seed)
+    cfg = {**cfg, "train": {**cfg["train"], "seed": seed}}
+    T = int(T or cfg["windows"]["length"])
+    return build_windowed(df, cfg, regime=regime, T=T, seed=seed, logger=logger,
+                          drop_features=audit_drop_features(cfg),
+                          low_memory=os.environ.get("P4_RELEASE_TABLE") == "1")
+
+
 def run_deep(df, cfg, model_name, regime, seed, experiment, logger, T=None, tag="", wd=None):
     """Train and evaluate one neural model. Returns (run_dir, metrics, model, wd)."""
     set_seed(seed)
     cfg = {**cfg, "train": {**cfg["train"], "seed": seed}, "model": {**cfg["model"], "name": model_name}}
     T = int(T or cfg["windows"]["length"])
     if wd is None:
-        wd = build_windowed(df, cfg, regime=regime, T=T, seed=seed, logger=logger,
-                            drop_features=audit_drop_features(cfg))
+        wd = build_run_windows(df, cfg, regime, seed, T, logger)
     device = resolve_device(cfg["train"]["device"])
     model = build_model(model_name, len(wd.features), wd.hierarchy, cfg["model"])
     n_params = count_parameters(model)
@@ -221,7 +232,7 @@ def load_or_train_deep(df, cfg, model_name, regime, seed, experiment, logger, T=
     """Reuse model.pt from the newest existing run with the same stem (handles append-only __vN suffixes),
     else train. Previous models are never silently overwritten.
     If strict=True, raises FileNotFoundError when no existing model.pt is found instead of training —
-    use this when a downstream script must never retrain a Paper 1/2 artefact."""
+    use this when a downstream script must never retrain an existing artefact."""
     T = int(T or cfg["windows"]["length"])
     name = f"{model_name}_{regime}_T{T}{'_' + tag if tag else ''}_seed{seed}"
     existing = latest_run_dir(cfg, experiment, name)
@@ -244,7 +255,7 @@ def load_or_train_deep(df, cfg, model_name, regime, seed, experiment, logger, T=
         raise FileNotFoundError(
             f"strict=True: no model.pt found for {model_name} regime={regime} T={T} seed={seed}.\n"
             f"Searched: {searched}\n"
-            f"Refusing to train a new deep model under this call. Ensure the Paper 1/2 artefact "
+            f"Refusing to train a new deep model under this call. Ensure the existing artefact "
             f"exists at one of the searched paths, or set strict=False to allow training."
         )
     _, _, model, wd = run_deep(df, cfg, model_name, regime, seed, experiment, logger, T=T, tag=tag, wd=wd)
@@ -296,7 +307,7 @@ def load_or_fit_classical(name, wd, cfg, seed, regime, experiment, logger, stric
         raise FileNotFoundError(
             f"strict=True: no model.pkl found for classical model {name} regime={regime} seed={seed}.\n"
             f"Searched: {searched}\n"
-            f"Refusing to refit under this call. Ensure the Paper 1/2 model.pkl exists at one of "
+            f"Refusing to refit under this call. Ensure the existing model.pkl exists at one of "
             f"the searched paths, or set strict=False to allow refitting."
         )
     return fit_classical(name, wd, cfg, seed)

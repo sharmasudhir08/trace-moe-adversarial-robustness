@@ -4,6 +4,7 @@ Rows are grouped into contiguous *segments* (a whole file, or the head/tail of a
 T consecutive rows inside one segment, so no window ever crosses a train/val/test boundary.
 The label of a window is the label of its last row.
 """
+import gc
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -85,8 +86,14 @@ def _random_split(starts, labels, test_frac, val_frac, seed):
     return {k: np.sort(np.concatenate(v)) if v else np.array([], dtype=np.int64) for k, v in out.items()}
 
 
-def build_windowed(df, cfg, regime=None, T=None, hierarchy=None, seed=None, logger=None, drop_features=None):
+def build_windowed(df, cfg, regime=None, T=None, hierarchy=None, seed=None, logger=None, drop_features=None,
+                   low_memory=False):
     """Turn a table into scaled, split, windowed arrays according to cfg."""
+    # low_memory: a caller may pass the table inside a one-element list and drop its own reference; the table
+    # is then freed as soon as the arrays have been extracted, before scaling allocates the second full-size array.
+    holder = None
+    if isinstance(df, list):
+        holder, df = df, df[0]
     regime = regime or cfg["split"]["regime"]
     T = int(T or cfg["windows"]["length"])
     seed = cfg["train"]["seed"] if seed is None else seed
@@ -103,6 +110,10 @@ def build_windowed(df, cfg, regime=None, T=None, hierarchy=None, seed=None, logg
     for lvl in LEVELS:
         mapping = hierarchy.index[lvl]
         y[lvl] = df.loc[row_index, lvl].astype(str).map(lambda v: mapping.get(v, -1)).to_numpy(np.int64)
+    if holder is not None:
+        holder.clear()
+        del df
+        gc.collect()
 
     # window starts per segment
     starts = {"train": [], "val": [], "test": [], "pool": []}
@@ -144,7 +155,7 @@ def build_windowed(df, cfg, regime=None, T=None, hierarchy=None, seed=None, logg
     tr_rows = np.unique((starts["train"][:, None] + np.arange(T)[None, :]).ravel()) if len(starts["train"]) \
         else np.arange(len(raw))
     scaler = Scaler(cfg["data"]["scaler"], cfg["data"]["clip_value"]).fit(raw[tr_rows], seed=seed)
-    X = scaler.transform(raw)
+    X = scaler.transform(raw, chunk=250_000 if low_memory else 1_000_000)   # smaller chunks: lower transient memory, same numbers
     del raw
 
     report = {"regime": regime, "T": T, "n_features": len(feats), "dropped_features": sorted(drop)}

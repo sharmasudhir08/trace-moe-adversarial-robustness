@@ -1,0 +1,16 @@
+# U2 (post hoc, exploratory, CPU, no training)
+
+Command: python scripts/p4_rev2_batch1.py --date 20261121 --tasks U2
+Script SHA-256: 33a6796f8072cf9ef314e9252ab43b07abcb46491386464814058b49a34582d7
+Inputs: results_v3_paper3/score_export, zero_day/<run>/predictions.npz and metrics.json, h8_verdict CSVs. Runs read: 75. rng seed 42, bootstrap 10000 over the five seeds.
+Started 2026-11-21 19:16:44, ended 2026-11-21 19:18:20.
+
+Score A = KL(p19 aggregated to 6 categories || p6) + KL(p6 aggregated to 2 || p2), epsilon 1e-6; score B = 1 if the argmax of the 19-class head (mapped to its category) differs from the argmax of the 6-class head, or the 6-class argmax (mapped to binary) differs from the binary head. OR rule: energy flag (exported thr) OR B = 1. Probabilities stored as float16. Check: energy AUROC equals per_run A7_energy_auroc, max difference 1.11e-16 (criterion 1e-6; PASS).
+
+Mean over the five classes per seed, then seed interval:
+
+| model       |   scoreA_minus_energy_auroc |   scoreA_minus_energy_auroc_lo |   scoreA_minus_energy_auroc_hi |   scoreB_minus_energy_auroc |   scoreB_minus_energy_auroc_lo |   scoreB_minus_energy_auroc_hi |   caught_energy |   caught_energy_lo |   caught_energy_hi |   caught_energy_or_B |   caught_energy_or_B_lo |   caught_energy_or_B_hi |   far_energy |   far_energy_lo |   far_energy_hi |   far_energy_or_B |   far_energy_or_B_lo |   far_energy_or_B_hi |   n_seeds |
+|:------------|----------------------------:|-------------------------------:|-------------------------------:|----------------------------:|-------------------------------:|-------------------------------:|----------------:|-------------------:|-------------------:|---------------------:|------------------------:|------------------------:|-------------:|----------------:|----------------:|------------------:|---------------------:|---------------------:|----------:|
+| bilstm_dnn  |                      0.0884 |                         0.0405 |                         0.1353 |                     -0.1229 |                        -0.1654 |                        -0.0825 |          0.3764 |             0.3107 |             0.4296 |               0.4114 |                  0.3665 |                  0.4508 |       0.051  |          0.0448 |          0.0554 |            0.052  |               0.0459 |               0.056  |         5 |
+| trace_moe   |                     -0.0019 |                        -0.0261 |                         0.0223 |                     -0.1805 |                        -0.2414 |                        -0.1301 |          0.5009 |             0.4626 |             0.5364 |               0.5019 |                  0.466  |                  0.5366 |       0.0418 |          0.0399 |          0.0447 |            0.0419 |               0.0399 |               0.0448 |         5 |
+| transformer |                     -0.0134 |                        -0.0605 |                         0.0396 |                     -0.2011 |                        -0.2291 |                        -0.1731 |          0.5605 |             0.5496 |             0.5694 |               0.5617 |                  0.5513 |                  0.5702 |       0.044  |          0.0427 |          0.0455 |            0.0441 |               0.0429 |               0.0457 |         5 |

@@ -1,7 +1,10 @@
 """Training and prediction loops for the neural models (mixed precision, early stopping, MoE balance loss)."""
 import copy
 import math
+import os
+import random
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -68,10 +71,52 @@ def _priors(wd):
     return {lvl: class_counts(lab[lvl], wd.hierarchy.n(lvl)) for lvl in LEVELS}
 
 
+def _atomic_save(obj, path):
+    """Write to a temporary file, then replace, so a crash never leaves a half-written checkpoint."""
+    path = Path(path)
+    tmp = path.with_name(path.name + ".tmp")
+    torch.save(obj, tmp)
+    os.replace(tmp, path)
+
+
+def _checkpoint_dir(cfg):
+    """Opt-in checkpointing: active only when the environment variable P4_CHECKPOINT_DIR is set.
+    One sub-folder per run, keyed by model, regime, held-out class, window length and seed."""
+    root = os.environ.get("P4_CHECKPOINT_DIR")
+    if not root:
+        return None
+    key = (f"{cfg['model']['name']}_{cfg['split']['regime']}_T{cfg['windows']['length']}"
+           f"_{cfg['split'].get('loao_class') or 'none'}_seed{cfg['train']['seed']}")
+    d = Path(root) / key
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _rng_state():
+    st = {"python": random.getstate(), "numpy": np.random.get_state(), "torch": torch.get_rng_state()}
+    if torch.cuda.is_available():
+        st["cuda"] = torch.cuda.get_rng_state_all()
+    return st
+
+
+def _set_rng_state(st):
+    random.setstate(st["python"])
+    np.random.set_state(st["numpy"])
+    torch.set_rng_state(st["torch"])
+    if "cuda" in st and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(st["cuda"])
+
+
 def train_model(model, wd, cfg, device, logger):
     """Train with early stopping on validation macro-F1 of the finest level.
     Models with experts add model.aux_loss (load balancing) times model.moe.balance_weight.
     Returns (best_model, history DataFrame).
+
+    Checkpointing (opt-in, no effect on the training maths): when P4_CHECKPOINT_DIR is set, after every epoch it
+    saves epochs/epoch_NNN.pt (model weights and that epoch's metrics), history.csv, best.pt (best weights so far)
+    and resume.pt (model, optimiser, scheduler, grad-scaler, early-stopping counters, RNG state; overwritten
+    atomically), plus a full snapshot full_epoch_NNN.pt every P4_CHECKPOINT_KEEP_EVERY epochs (default 10).
+    If resume.pt exists for the same run, training continues from the next epoch.
     """
     tc = cfg["train"]
     model.to(device)
@@ -87,7 +132,32 @@ def train_model(model, wd, cfg, device, logger):
     train_lab = wd.labels("train", "label19")
     oversample = bool(cfg.get("data", {}).get("oversample_small_classes", False))
     best, best_score, bad, hist = None, -1.0, 0, []
-    for epoch in range(1, tc["epochs"] + 1):
+
+    ckpt_dir = _checkpoint_dir(cfg)
+    keep_every = int(os.environ.get("P4_CHECKPOINT_KEEP_EVERY", "10"))
+    signature = {"epochs": tc["epochs"], "lr": tc["lr"], "batch_size": tc["batch_size"], "seed": tc["seed"],
+                 "weight_decay": tc["weight_decay"], "patience": tc["patience"],
+                 "n_params": sum(p.numel() for p in model.parameters())}
+    start_epoch, finished = 1, False
+    if ckpt_dir is not None:
+        logger.info(f"Checkpointing to {ckpt_dir} (full snapshot every {keep_every} epochs)")
+        resume_path = ckpt_dir / "resume.pt"
+        if resume_path.exists():
+            ck = torch.load(resume_path, map_location="cpu", weights_only=False)
+            if ck["signature"] != signature:
+                raise RuntimeError(f"Checkpoint at {resume_path} was made with different settings "
+                                   f"{ck['signature']} vs {signature}; refusing to resume. Move it aside.")
+            model.load_state_dict(ck["model"])
+            opt.load_state_dict(ck["opt"])
+            sched.load_state_dict(ck["sched"])
+            scaler.load_state_dict(ck["scaler"])
+            best, best_score, bad, hist = ck["best"], ck["best_score"], ck["bad"], ck["hist"]
+            start_epoch, finished = ck["epoch"] + 1, ck.get("finished", False)
+            _set_rng_state(ck["rng"])
+            logger.info(f"RESUMED from checkpoint: last completed epoch {ck['epoch']}, best val macro-F1 "
+                        f"{best_score:.4f}, patience counter {bad}, finished={finished}")
+
+    for epoch in range(start_epoch, (tc["epochs"] + 1) if not finished else start_epoch):
         model.train()
         t0 = time.time()
         idx = class_balanced_sample(train_lab, cfg["windows"]["max_windows_per_class_train"],
@@ -127,13 +197,29 @@ def train_model(model, wd, cfg, device, logger):
         logger.info(f"epoch {epoch:3d} | loss {row['train_loss']:.4f} | val macro-F1 "
                     f"2:{row['val_macro_f1_label2'] or 0:.4f} 6:{row['val_macro_f1_label6'] or 0:.4f} "
                     f"19:{row['val_macro_f1_label19'] or 0:.4f} | {row['seconds']}s")
-        if score > best_score + 1e-4:
+        improved = score > best_score + 1e-4
+        stop = False
+        if improved:
             best_score, best, bad = score, copy.deepcopy(model.state_dict()), 0
         else:
             bad += 1
             if bad >= tc["patience"]:
                 logger.info(f"Early stopping at epoch {epoch} (best val macro-F1 {best_score:.4f})")
-                break
+                stop = True
+        if ckpt_dir is not None:
+            (ckpt_dir / "epochs").mkdir(exist_ok=True)
+            _atomic_save({"epoch": epoch, "model": model.state_dict(), "row": row}, ckpt_dir / "epochs" / f"epoch_{epoch:03d}.pt")
+            pd.DataFrame(hist).to_csv(ckpt_dir / "history.csv", index=False)
+            if improved:
+                _atomic_save({"epoch": epoch, "model": best, "best_score": best_score}, ckpt_dir / "best.pt")
+            state = {"epoch": epoch, "model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+                     "scaler": scaler.state_dict(), "best": best, "best_score": best_score, "bad": bad, "hist": hist,
+                     "rng": _rng_state(), "signature": signature, "finished": bool(stop or epoch >= tc["epochs"])}
+            _atomic_save(state, ckpt_dir / "resume.pt")
+            if keep_every > 0 and epoch % keep_every == 0:
+                _atomic_save(state, ckpt_dir / f"full_epoch_{epoch:03d}.pt")
+        if stop:
+            break
     if best is not None:
         model.load_state_dict(best)
     return model, pd.DataFrame(hist)
